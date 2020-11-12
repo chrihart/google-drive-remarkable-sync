@@ -149,7 +149,16 @@ class Synchronizer {
       zipBlob = Utilities.zip([contentBlob]);
     } else {
       let gdFileExt = gdFileObj.getName().split('.').pop();
-      let gdFileBlob = gdFileObj.getBlob().setName(`${uuid}.${gdFileExt}`);
+      // This deals with "shortcuts"
+      var gdFileBlob;
+      if (gdFileObj.getTargetId()!=null) {
+        Logger.log("working on dealing with shortcut");
+        let targetFileObj = DriveApp.getFileById(gdFileObj.getTargetId());                                                
+        Logger.log("found target ID", targetFileObj);
+        gdFileBlob = targetFileObj.getBlob().setName(`${uuid}.${gdFileExt}`);
+      } else {
+        gdFileBlob = gdFileObj.getBlob().setName(`${uuid}.${gdFileExt}`);
+      }
       let pdBlob = Utilities.newBlob("").setName(`${uuid}.pagedata`);
       let contentData = {
         'extraMetadata': {},
